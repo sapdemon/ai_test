@@ -5,14 +5,14 @@
 	displayBlock="true">
 	<Page title="{i18n>master.title}">
 		<content>
-			<List id="requestsList" mode="None" items="{path: '/requests'}" growing="true" growingScrollToLoad="true" growingThreshold="20"
+			<List id="requestsList" mode="None" items="{path: '/Requests'}" growing="true" growingScrollToLoad="true" growingThreshold="20"
 				itemPress="onRequestPress">
 				<ObjectListItem
-					title="{description}"
+					title="{Description}"
 					type="Active">
 					<attributes>
-						<ObjectAttribute title="{i18n>request.number}" text="{id}"/>
-						<ObjectAttribute title="{i18n>request.createdAt}" text="{path: 'createdAt', formatter: '.formatter.formatDate'}"/>
+						<ObjectAttribute title="{i18n>request.number}" text="{RequestID}"/>
+						<ObjectAttribute title="{i18n>request.createdAt}" text="{path: 'CreatedAt', formatter: '.formatter.formatDate'}"/>
 					</attributes>
 				</ObjectListItem>
 			</List>

@@ -5,7 +5,7 @@
 	displayBlock="true">
 	<Page id="detailPage" title="{i18n>detail.title}">
 		<headerContent>
-			<ObjectStatus text="{path: 'createdAt', formatter: '.formatter.formatDate'}" state="Information"/>
+			<ObjectStatus text="{path: 'CreatedAt', formatter: '.formatter.formatDate'}" state="Information"/>
 		</headerContent>
 		<subHeader>
 			<OverflowToolbar>
@@ -15,11 +15,11 @@
 		</subHeader>
 		<content>
 			<ObjectHeader
-				title="{description}"
-				number="{id}"
+				title="{Description}"
+				number="{RequestID}"
 				numberUnit="{i18n>request.number}"/>
 
-			<Table id="positionsTable" mode="Delete" delete="onDeletePosition" items="{path: 'positions'}">
+			<Table id="positionsTable" mode="Delete" delete="onDeletePosition" items="{path: 'to_Items'}">
 				<headerToolbar>
 					<Toolbar>
 						<Title text="{i18n>detail.positions}" level="H3"/>
@@ -35,11 +35,11 @@
 				<items>
 					<ColumnListItem>
 						<cells>
-							<Text text="{positionNumber}"/>
-							<Input value="{amount}" type="Number" placeholder="0.00"/>
-							<Input value="{currency}" placeholder="UAH"/>
-							<Input value="{description}"/>
-							<Input value="{departmentId}" showValueHelp="true" valueHelpRequest="onDepartmentValueHelp"/>
+							<Text text="{PositionNo}"/>
+							<Input value="{Amount}" type="Number" placeholder="0.00"/>
+							<Input value="{Currency}" placeholder="UAH"/>
+							<Input value="{Description}"/>
+							<Input value="{DepartmentId}" showValueHelp="true" valueHelpRequest="onDepartmentValueHelp"/>
 						</cells>
 					</ColumnListItem>
 				</items>

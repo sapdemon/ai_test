@@ -2,4 +2,5 @@
 service definition Z_REQUEST_SRV {
 	expose ZC_Request as Requests;
 	expose ZC_RequestItem as RequestItems;
+	expose ZC_Department as Departments;
 }

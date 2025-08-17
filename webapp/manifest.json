@@ -9,7 +9,15 @@
 		"applicationVersion": {
 			"version": "1.0.0"
 		},
-		"dataSources": {}
+		"dataSources": {
+			"mainService": {
+				"type": "OData",
+				"uri": "/odata/v4/Z_REQUEST_SRV/",
+				"settings": {
+					"odataVersion": "4.0"
+				}
+			}
+		}
 	},
 	"sap.ui": {
 		"technology": "UI5",
@@ -35,6 +43,15 @@
 			}
 		},
 		"models": {
+			"": {
+				"type": "sap.ui.model.odata.v4.ODataModel",
+				"dataSource": "mainService",
+				"settings": {
+					"synchronizationMode": "None",
+					"operationMode": "Server",
+					"autoExpandSelect": true
+				}
+			},
 			"i18n": {
 				"type": "sap.ui.model.resource.ResourceModel",
 				"settings": {
@@ -62,7 +79,7 @@
 				},
 				{
 					"name": "Detail",
-					"pattern": "Request/{requestId}",
+					"pattern": "Request/{path*}",
 					"target": ["Detail"]
 				}
 			],

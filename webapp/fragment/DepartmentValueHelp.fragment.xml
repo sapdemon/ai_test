@@ -1,13 +1,13 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
 	<SelectDialog id="departmentVH"
 			title="{i18n>vh.departments.title}"
-			items="{path: 'departments>/departments'}"
+			items="{path: '/Departments'}"
 			search="onDepartmentSearch"
 			confirm="onDepartmentConfirm"
 			cancel="onDepartmentConfirm">
 			<StandardListItem
-				title="{departments>name}"
-				description="{departments>id}"
+				title="{Name}"
+				description="{DepartmentId}"
 				type="Active"/>
 		</SelectDialog>
 </core:FragmentDefinition>

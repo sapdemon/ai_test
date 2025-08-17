@@ -5,9 +5,8 @@ sap.ui.define([
 	"sap/m/MessageToast",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
-	"com/example/requests/model/RequestService",
 	"com/example/requests/util/formatter"
-], function (Controller, JSONModel, Fragment, MessageToast, Filter, FilterOperator, RequestService, formatter) {
+], function (Controller, JSONModel, Fragment, MessageToast, Filter, FilterOperator, formatter) {
 	"use strict";
 
 	return Controller.extend("com.example.requests.controller.Detail", {
@@ -18,13 +17,8 @@ sap.ui.define([
 		},
 
 		_onRouteMatched: function (oEvent) {
-			var sId = oEvent.getParameter("arguments").requestId;
-			var oModel = this.getOwnerComponent().getModel();
-			var aRequests = oModel.getProperty("/requests") || [];
-			var iIdx = aRequests.findIndex(function (r) { return String(r.id) === String(sId); });
-			if (iIdx > -1) {
-				this.getView().bindElement({ path: "/requests/" + iIdx });
-			}
+			var sPath = decodeURIComponent(oEvent.getParameter("arguments").path);
+			this.getView().bindElement({ path: "/" + sPath });
 		},
 
 		onAddPosition: function () {
@@ -39,7 +33,7 @@ sap.ui.define([
 				});
 			}
 			this._pDialog.then(function (oDialog) {
-				var oNew = RequestService.createEmptyPosition();
+				var oNew = { Amount: null, Currency: "UAH", Description: "", DepartmentId: "" };
 				oDialog.setModel(new JSONModel(oNew), "pos");
 				oDialog.open();
 			}.bind(this));
@@ -48,8 +42,8 @@ sap.ui.define([
 		onSavePosition: function () {
 			var oDialog = this.byId("positionDialog");
 			var oPos = oDialog.getModel("pos").getData();
-			var iRequestId = this.getView().getBindingContext().getProperty("id");
-			RequestService.addPosition(iRequestId, oPos);
+			var oBinding = this.byId("positionsTable").getBinding("items");
+			oBinding.create(oPos);
 			oDialog.close();
 			MessageToast.show(this.getResourceBundle().getText("msg.positionAdded"));
 		},
@@ -59,11 +53,10 @@ sap.ui.define([
 		},
 
 		onDeletePosition: function (oEvent) {
-			var oContext = oEvent.getParameter("listItem").getBindingContext();
-			var iPosNumber = oContext.getProperty("positionNumber");
-			var iRequestId = this.getView().getBindingContext().getProperty("id");
-			RequestService.deletePosition(iRequestId, iPosNumber);
-			MessageToast.show(this.getResourceBundle().getText("msg.positionDeleted"));
+			var oCtx = oEvent.getParameter("listItem").getBindingContext();
+			oCtx.delete().then(function () {
+				MessageToast.show(this.getResourceBundle().getText("msg.positionDeleted"));
+			}.bind(this));
 		},
 
 		onDepartmentValueHelp: function (oEvent) {
@@ -88,8 +81,8 @@ sap.ui.define([
 			var sValue = oEvent.getParameter("value");
 			var oFilter = new Filter({
 				filters: [
-					new Filter("id", FilterOperator.Contains, sValue),
-					new Filter("name", FilterOperator.Contains, sValue)
+					new Filter("DepartmentId", FilterOperator.Contains, sValue),
+					new Filter("Name", FilterOperator.Contains, sValue)
 				],
 				and: false
 			});
@@ -99,9 +92,9 @@ sap.ui.define([
 		onDepartmentConfirm: function (oEvent) {
 			var oSelectedItem = oEvent.getParameter("selectedItem");
 			if (!oSelectedItem) { return; }
-			var oSelected = oSelectedItem.getBindingContext("departments").getObject();
+			var oSelected = oSelectedItem.getBindingContext().getObject();
 			var oField = oEvent.getSource().data("field");
-			oField.setValue(oSelected.id);
+			oField.setValue(oSelected.DepartmentId);
 		},
 
 		onDepartmentCancel: function () {

@@ -1,0 +1,79 @@
+{
+	"_version": "1.56.0",
+	"sap.app": {
+		"id": "com.example.requests",
+		"type": "application",
+		"i18n": "i18n/i18n.properties",
+		"title": "Requests Registry",
+		"description": "Fiori-style app for managing requests and positions",
+		"applicationVersion": {
+			"version": "1.0.0"
+		},
+		"dataSources": {}
+	},
+	"sap.ui": {
+		"technology": "UI5",
+		"deviceTypes": {
+			"desktop": true,
+			"tablet": true,
+			"phone": true
+		}
+	},
+	"sap.ui5": {
+		"rootView": {
+			"viewName": "com.example.requests.view.App",
+			"type": "XML",
+			"async": true,
+			"id": "app"
+		},
+		"dependencies": {
+			"minUI5Version": "1.84.0",
+			"libs": {
+				"sap.m": {},
+				"sap.ui.core": {},
+				"sap.ui.layout": {}
+			}
+		},
+		"models": {
+			"i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"settings": {
+					"bundleName": "com.example.requests.i18n.i18n"
+				}
+			},
+			"device": {
+				"type": "sap.ui.model.json.JSONModel"
+			}
+		},
+		"routing": {
+			"config": {
+				"routerClass": "sap.m.routing.Router",
+				"viewType": "XML",
+				"async": true,
+				"viewPath": "com.example.requests.view",
+				"controlAggregation": "pages",
+				"controlId": "app"
+			},
+			"routes": [
+				{
+					"name": "Master",
+					"pattern": "",
+					"target": ["Master"]
+				},
+				{
+					"name": "Detail",
+					"pattern": "Request/{requestId}",
+					"target": ["Detail"]
+				}
+			],
+			"targets": {
+				"Master": {
+					"viewName": "Master"
+				},
+				"Detail": {
+					"viewName": "Detail"
+				}
+			}
+		}
+	}
+}

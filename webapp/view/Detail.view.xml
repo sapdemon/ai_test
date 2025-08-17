@@ -1,0 +1,49 @@
+<mvc:View
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns="sap.m"
+	controllerName="com.example.requests.controller.Detail"
+	displayBlock="true">
+	<Page id="detailPage" title="{i18n>detail.title}">
+		<headerContent>
+			<ObjectStatus text="{path: 'createdAt', formatter: '.formatter.formatDate'}" state="Information"/>
+		</headerContent>
+		<subHeader>
+			<OverflowToolbar>
+				<ToolbarSpacer/>
+				<Button icon="sap-icon://add" text="{i18n>detail.addPosition}" press="onAddPosition"/>
+			</OverflowToolbar>
+		</subHeader>
+		<content>
+			<ObjectHeader
+				title="{description}"
+				number="{id}"
+				numberUnit="{i18n>request.number}"/>
+
+			<Table id="positionsTable" mode="Delete" delete="onDeletePosition" items="{path: 'positions'}">
+				<headerToolbar>
+					<Toolbar>
+						<Title text="{i18n>detail.positions}" level="H3"/>
+					</Toolbar>
+				</headerToolbar>
+				<columns>
+					<Column width="8rem"><Text text="{i18n>position.number}"/></Column>
+					<Column width="10rem"><Text text="{i18n>position.amount}"/></Column>
+					<Column width="8rem"><Text text="{i18n>position.currency}"/></Column>
+					<Column minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>position.description}"/></Column>
+					<Column width="12rem"><Text text="{i18n>position.department}"/></Column>
+				</columns>
+				<items>
+					<ColumnListItem>
+						<cells>
+							<Text text="{positionNumber}"/>
+							<Input value="{amount}" type="Number" placeholder="0.00"/>
+							<Input value="{currency}" placeholder="UAH"/>
+							<Input value="{description}"/>
+							<Input value="{departmentId}" showValueHelp="true" valueHelpRequest="onDepartmentValueHelp"/>
+						</cells>
+					</ColumnListItem>
+				</items>
+			</Table>
+		</content>
+	</Page>
+</mvc:View>

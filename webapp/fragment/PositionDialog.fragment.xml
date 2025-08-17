@@ -1,0 +1,27 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<Dialog id="positionDialog" title="{i18n>detail.addPosition}" escapeHandler="onCancelPosition">
+		<subHeader>
+			<Toolbar>
+				<Title text="{i18n>position.new}"/>
+			</Toolbar>
+		</subHeader>
+		<content>
+			<VBox fitContainer="true" renderType="Bare">
+				<Label text="{i18n>position.amount}"/>
+				<Input value="{pos>/amount}" type="Number" placeholder="0.00"/>
+				<Label text="{i18n>position.currency}"/>
+				<Input value="{pos>/currency}" placeholder="UAH"/>
+				<Label text="{i18n>position.description}"/>
+				<Input value="{pos>/description}"/>
+				<Label text="{i18n>position.department}"/>
+				<Input value="{pos>/departmentId}" showValueHelp="true" valueHelpRequest="onDepartmentValueHelp"/>
+			</VBox>
+		</content>
+		<beginButton>
+			<Button text="{i18n>common.save}" type="Emphasized" press="onSavePosition"/>
+		</beginButton>
+		<endButton>
+			<Button text="{i18n>common.cancel}" press="onCancelPosition"/>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

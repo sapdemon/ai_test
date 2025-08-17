@@ -1,0 +1,21 @@
+<mvc:View
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns="sap.m"
+	controllerName="com.example.requests.controller.Master"
+	displayBlock="true">
+	<Page title="{i18n>master.title}">
+		<content>
+			<List id="requestsList" mode="None" items="{path: '/Requests'}" growing="true" growingScrollToLoad="true" growingThreshold="20"
+				itemPress="onRequestPress">
+				<ObjectListItem
+					title="{Description}"
+					type="Active">
+					<attributes>
+						<ObjectAttribute title="{i18n>request.number}" text="{RequestID}"/>
+						<ObjectAttribute title="{i18n>request.createdAt}" text="{path: 'CreatedAt', formatter: '.formatter.formatDate'}"/>
+					</attributes>
+				</ObjectListItem>
+			</List>
+		</content>
+	</Page>
+</mvc:View>

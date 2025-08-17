@@ -1,0 +1,39 @@
+{
+	"requests": [
+		{
+			"id": 1,
+			"createdAt": "2025-01-10T09:00:00Z",
+			"description": "Закупка оборудования",
+			"positions": [
+				{
+					"positionNumber": 1,
+					"amount": 12000,
+					"currency": "UAH",
+					"description": "Ноутбуки",
+					"departmentId": "IT"
+				},
+				{
+					"positionNumber": 2,
+					"amount": 3000,
+					"currency": "UAH",
+					"description": "Мониторы",
+					"departmentId": "IT"
+				}
+			]
+		},
+		{
+			"id": 2,
+			"createdAt": "2025-02-03T11:30:00Z",
+			"description": "Маркетинговая кампания",
+			"positions": [
+				{
+					"positionNumber": 1,
+					"amount": 50000,
+					"currency": "UAH",
+					"description": "Рекламные баннеры",
+					"departmentId": "MKT"
+				}
+			]
+		}
+	]
+}

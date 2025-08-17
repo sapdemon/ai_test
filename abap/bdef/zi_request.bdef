@@ -1,0 +1,31 @@
+managed implementation in class zbp_i_request unique;
+
+strict ( 2 );
+
+definition
+
+define behavior for ZI_Request alias Request
+persistent table zreq_hdr
+lock master
+etag master LocalLastChangedAt
+{
+	create;
+	update;
+	delete;
+
+	association _Items { create; }
+
+	action draft; // not using drafts but placeholder
+}
+
+define behavior for ZI_RequestItem alias Item
+persistent table zreq_item
+lock dependent by _Request
+{
+	field ( mandatory ) Amount, Currency;
+	create;
+	update;
+	delete;
+
+	association _Request;
+}

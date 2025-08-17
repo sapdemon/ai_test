@@ -73,3 +73,27 @@ git commit -m "Initial commit: SAPUI5 Requests app"
 - Auto-numbering for requests and positions is handled in `model/RequestService.js`.
 - Departments directory is loaded from `model/Departments.json` and used in a value-help dialog.
 - This is a standalone UI-only implementation. For on-premise, connect to an OData service by replacing the JSON model with an `ODataModel` and mapping service operations in `RequestService`.
+
+## SAP RAP backend (ABAP RESTful)
+
+This repo also includes a minimal RAP implementation for the same domain model (Requests, Positions, Departments).
+
+- Tables (DDL sources): `abap/ddl/`
+  - `zreq_hdr.ddl`, `zreq_item.ddl`, `zdepartment.ddl`
+- CDS Interface and Projection: `abap/cds/`
+  - `zi_request.cds`, `zc_request.cds`
+- Behavior Definition and Implementation: `abap/bdef/zi_request.bdef`, `abap/abap/zbp_i_request.clas.abap`
+- Service Exposure: `abap/srv/z_request_srv.service`, `abap/srv/z_request_srv.behavior`
+
+### Deploy/Activate in ADT
+1. Create corresponding ABAP repository objects in your ADT package using the above sources.
+2. Activate in order: DDL tables -> CDS views -> Behavior Definition -> Behavior Pool class -> Projection CDS -> Projection Behavior -> Service Definition.
+3. Bind Service Definition to a Service Binding (OData V4) and publish.
+
+### Connect UI5 app to RAP
+- Replace JSONModel in `webapp/Component.js` with `sap.ui.model.odata.v4.ODataModel` pointed to the published service URL (entity sets: `Requests`, `RequestItems`).
+- Map CRUD operations in `RequestService.js` to OData actions or direct `create`/`update`/`delete` on the V4 model.
+
+Notes:
+- Auto-инкремент `RequestID` и `PositionNo` реализованы в behavior pool `zbp_i_request`.
+- Валюта по умолчанию — UAH — проставляется в create для позиций.

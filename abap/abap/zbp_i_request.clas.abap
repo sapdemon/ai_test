@@ -1,67 +1,94 @@
-CLASS zbp_i_request DEFINITION PUBLIC FINAL CREATE PUBLIC.
-	PUBLIC SECTION.
-		INTERFACES if_oo_adt_classrun.
-		INTERFACES if_abap_behavior_handler.
-	PROTECTED SECTION.
-	PRIVATE SECTION.
+CLASS zbp_i_request DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zi_request.
 ENDCLASS.
 
 CLASS zbp_i_request IMPLEMENTATION.
-	METHOD if_oo_adt_classrun~main.
-		out->write( |Behavior Pool for ZI_Request| ).
-	ENDMETHOD.
+ENDCLASS.
 
-	METHOD if_abap_behavior_handler~create.
-		DATA: lt_hdr TYPE TABLE OF zreq_hdr,
-			lt_itm TYPE TABLE OF zreq_item.
+CLASS lhc_request DEFINITION INHERITING FROM cl_abap_behavior_handler.
+	PROTECTED SECTION.
+		METHODS SetRequestNumberAndCreated FOR DETERMINE ON SAVE
+			IMPORTING keys FOR Request.
+ENDCLASS.
 
-		LOOP AT entities ASSIGNING FIELD-SYMBOL(<e>).
-			IF <e>-entity = 'REQUEST'.
-				DATA(ls_hdr) = VALUE zreq_hdr( client = sy-mandt req_uuid = cl_system_uuid=>create_uuid_x16( ) ).
-				ls_hdr-created_at = cl_abap_context_info=>get_system_time( ).
-				SELECT MAX( req_id ) INTO @ls_hdr-req_id FROM zreq_hdr WHERE client = @sy-mandt.
-				ls_hdr-req_id = COALESCE( ls_hdr-req_id, 0 ) + 1.
-				ls_hdr-description = <e>-data-description.
-				APPEND ls_hdr TO lt_hdr.
-			ELSEIF <e>-entity = 'ITEM'.
-				DATA(ls_itm) = VALUE zreq_item( client = sy-mandt item_uuid = cl_system_uuid=>create_uuid_x16( ) ).
-				ls_itm-parent_uuid = <e>-data-requestuuid.
-				SELECT MAX( position_no ) INTO @ls_itm-position_no FROM zreq_item WHERE client = @sy-mandt AND parent_uuid = @ls_itm-parent_uuid.
-				ls_itm-position_no = COALESCE( ls_itm-position_no, 0 ) + 1.
-				ls_itm-amount = <e>-data-amount.
-				ls_itm-currency = COND #( WHEN <e>-data-currency IS INITIAL THEN 'UAH' ELSE <e>-data-currency ).
-				ls_itm-description = <e>-data-description.
-				ls_itm-department_id = <e>-data-departmentid.
-				APPEND ls_itm TO lt_itm.
-			ENDIF.
-		ENDLOOP.
+CLASS lhc_request IMPLEMENTATION.
+	METHOD SetRequestNumberAndCreated.
+		DATA lt_req TYPE TABLE OF zi_request.
+		READ ENTITIES OF zi_request IN LOCAL MODE
+			ENTITY Request
+			ALL FIELDS WITH CORRESPONDING #( keys )
+			RESULT DATA(lt_hdr).
 
-		IF lt_hdr IS NOT INITIAL.
-			INSERT zreq_hdr FROM TABLE @lt_hdr.
+		IF lt_hdr IS INITIAL.
+			RETURN.
 		ENDIF.
-		IF lt_itm IS NOT INITIAL.
-			INSERT zreq_item FROM TABLE @lt_itm.
+
+		DATA lv_max TYPE zreq_hdr-req_id.
+		SELECT MAX( req_id ) INTO @lv_max FROM zreq_hdr WHERE client = @sy-mandt.
+		IF sy-subrc <> 0 OR lv_max IS INITIAL.
+			lv_max = 0.
 		ENDIF.
-	ENDMETHOD.
 
-	METHOD if_abap_behavior_handler~update.
-		LOOP AT entities ASSIGNING FIELD-SYMBOL(<e>).
-			IF <e>-entity = 'REQUEST'.
-				UPDATE zreq_hdr SET description = @<e>-data-description WHERE client = @sy-mandt AND req_uuid = @<e>-key-requestuuid.
-			ELSEIF <e>-entity = 'ITEM'.
-				UPDATE zreq_item SET amount = @<e>-data-amount, currency = @<e>-data-currency, description = @<e>-data-description, department_id = @<e>-data-departmentid WHERE client = @sy-mandt AND item_uuid = @<e>-key-itemuuid.
-			ENDIF.
+		DATA lt_upd TYPE TABLE FOR UPDATE zi_request\Request.
+		LOOP AT lt_hdr ASSIGNING FIELD-SYMBOL(<hdr>).
+			lv_max = lv_max + 1.
+			APPEND VALUE #( RequestUUID = <hdr>-RequestUUID
+				CreatedAt = cl_abap_context_info=>get_system_time( )
+				RequestID = lv_max ) TO lt_upd.
 		ENDLOOP.
-	ENDMETHOD.
 
-	METHOD if_abap_behavior_handler~delete.
-		LOOP AT entities ASSIGNING FIELD-SYMBOL(<e>).
-			IF <e>-entity = 'REQUEST'.
-				DELETE FROM zreq_item WHERE client = @sy-mandt AND parent_uuid = @<e>-key-requestuuid.
-				DELETE FROM zreq_hdr WHERE client = @sy-mandt AND req_uuid = @<e>-key-requestuuid.
-			ELSEIF <e>-entity = 'ITEM'.
-				DELETE FROM zreq_item WHERE client = @sy-mandt AND item_uuid = @<e>-key-itemuuid.
-			ENDIF.
+		MODIFY ENTITIES OF zi_request IN LOCAL MODE
+			ENTITY Request UPDATE FIELDS ( CreatedAt RequestID ) WITH lt_upd
+			FAILED DATA(failed) REPORTED DATA(reported).
+	ENDMETHOD.
+ENDCLASS.
+
+CLASS lhc_item DEFINITION INHERITING FROM cl_abap_behavior_handler.
+	PROTECTED SECTION.
+		METHODS SetItemDefaults FOR DETERMINE ON SAVE
+			IMPORTING keys FOR Item.
+ENDCLASS.
+
+CLASS lhc_item IMPLEMENTATION.
+	METHOD SetItemDefaults.
+		READ ENTITIES OF zi_request IN LOCAL MODE
+			ENTITY Item
+			ALL FIELDS WITH CORRESPONDING #( keys )
+			RESULT DATA(lt_items).
+
+		IF lt_items IS INITIAL.
+			RETURN.
+		ENDIF.
+
+		DATA lt_grouped TYPE SORTED TABLE OF zreq_item WITH UNIQUE KEY parent_uuid.
+		DATA lt_upd TYPE TABLE FOR UPDATE zi_request\Item.
+
+		" Pre-fetch current max PositionNo per parent
+		DATA lt_parents TYPE SORTED TABLE OF sysuuid_x16 WITH UNIQUE KEY table_line.
+		LOOP AT lt_items ASSIGNING FIELD-SYMBOL(<i>).
+			INSERT <i>-RequestUUID INTO TABLE lt_parents.
 		ENDLOOP.
+
+		DATA ls_parent TYPE sysuuid_x16.
+		LOOP AT lt_parents INTO ls_parent.
+			DATA(lv_curr_max) = 0.
+			SELECT MAX( position_no ) INTO @lv_curr_max FROM zreq_item
+				WHERE client = @sy-mandt AND parent_uuid = @ls_parent.
+			IF sy-subrc <> 0 OR lv_curr_max IS INITIAL.
+				lv_curr_max = 0.
+			ENDIF.
+			" Assign numbers to created items for this parent
+			LOOP AT lt_items ASSIGNING FIELD-SYMBOL(<ci>) WHERE RequestUUID = ls_parent.
+				lv_curr_max = lv_curr_max + 1.
+				APPEND VALUE #( ItemUUID    = <ci>-ItemUUID
+					PositionNo  = lv_curr_max
+					Currency    = COND #( WHEN <ci>-Currency IS INITIAL THEN 'UAH' ELSE <ci>-Currency ) ) TO lt_upd.
+			ENDLOOP.
+		ENDLOOP.
+
+		IF lt_upd IS NOT INITIAL.
+			MODIFY ENTITIES OF zi_request IN LOCAL MODE
+				ENTITY Item UPDATE FIELDS ( PositionNo Currency ) WITH lt_upd
+				FAILED DATA(failed) REPORTED DATA(reported).
+		ENDIF.
 	ENDMETHOD.
 ENDCLASS.

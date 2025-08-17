@@ -7,7 +7,6 @@ definition
 define behavior for ZI_Request alias Request
 persistent table zreq_hdr
 lock master
-etag master LocalLastChangedAt
 {
 	create;
 	update;
@@ -15,17 +14,35 @@ etag master LocalLastChangedAt
 
 	association _Items { create; }
 
-	action draft; // not using drafts but placeholder
+	determination SetRequestNumberAndCreated on save { create; }
+
+	mapping for zreq_hdr {
+		RequestUUID = req_uuid;
+		RequestID   = req_id;
+		CreatedAt   = created_at;
+		Description = description;
+	}
 }
 
 define behavior for ZI_RequestItem alias Item
 persistent table zreq_item
 lock dependent by _Request
 {
-	field ( mandatory ) Amount, Currency;
 	create;
 	update;
 	delete;
 
 	association _Request;
+
+	determination SetItemDefaults on save { create; }
+
+	mapping for zreq_item {
+		ItemUUID     = item_uuid;
+		RequestUUID  = parent_uuid;
+		PositionNo   = position_no;
+		Amount       = amount;
+		Currency     = currency;
+		Description  = description;
+		DepartmentId = department_id;
+	}
 }

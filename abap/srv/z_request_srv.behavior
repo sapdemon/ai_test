@@ -1,7 +1,5 @@
 projection; strict ( 2 );
 
-use draft; // optional if draft later
-
 define behavior for ZC_Request alias Request
 {
 	use create;

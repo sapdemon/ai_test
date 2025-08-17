@@ -97,3 +97,6 @@ This repo also includes a minimal RAP implementation for the same domain model (
 Notes:
 - Auto-инкремент `RequestID` и `PositionNo` реализованы в behavior pool `zbp_i_request`.
 - Валюта по умолчанию — UAH — проставляется в create для позиций.
+
+Note on RAP service URL:
+- The manifest expects the service at `/odata/v4/Z_REQUEST_SRV/`. Adjust this in `webapp/manifest.json` to match your Service Binding URL when you publish in your ABAP system.

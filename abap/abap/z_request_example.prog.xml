@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_PROG" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <PROGDIR>
+    <NAME>Z_REQUEST_EXAMPLE</NAME>
+    <SUBC>1</SUBC>
+    <RSTAT>K</RSTAT>
+    <VARCL>X</VARCL>
+    <DBAPL>S</DBAPL>
+    <DBNA>D$</DBNA>
+    <CLAS></CLAS>
+    <TYPE></TYPE>
+    <OCCURS>0</OCCURS>
+    <SUCU>ZREQUEST</SUCU>
+    <APPL>S</APPL>
+    <SECU></SECU>
+    <CNAM></CNAM>
+    <CDAT>0000-00-00</CDAT>
+    <UNAM></UNAM>
+    <UDAT>0000-00-00</UDAT>
+    <VERN>000000</VERN>
+    <LEVL></LEVL>
+    <RLOAD></RLOAD>
+    <UCCHECK>X</UCCHECK>
+   </PROGDIR>
+   <TPOOL>
+    <item>
+     <ID>I</ID>
+     <KEY>001</KEY>
+     <ENTRY>Выберите действие</ENTRY>
+     <LENGTH>30</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>002</KEY>
+     <ENTRY>1 - Создать новый запрос</ENTRY>
+     <LENGTH>60</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>003</KEY>
+     <ENTRY>2 - Прочитать запрос</ENTRY>
+     <LENGTH>60</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>004</KEY>
+     <ENTRY>3 - Обновить запрос</ENTRY>
+     <LENGTH>60</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>005</KEY>
+     <ENTRY>4 - Удалить запрос</ENTRY>
+     <LENGTH>60</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>006</KEY>
+     <ENTRY>5 - Показать список запросов</ENTRY>
+     <LENGTH>60</LENGTH>
+    </item>
+    <item>
+     <ID>R</ID>
+     <ENTRY>Пример использования класса обработки запросов</ENTRY>
+     <LENGTH>60</LENGTH>
+    </item>
+   </TPOOL>
+  </asx:values>
+ </asx:abap>
+</abapGit>
